@@ -8,6 +8,7 @@ import com.example.nolimits.data.local.model.AppUser
 import com.example.nolimits.ui.screens.RegistroScreen
 import com.example.nolimits.ui.viewmodels.AuthViewModel
 import com.example.nolimits.ui.viewmodels.UsuarioViewModel
+import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
 
@@ -85,7 +86,7 @@ class RegistroScreenTest {
         composeTestRule.onNodeWithText("Nombre").assertIsDisplayed()
         composeTestRule.onNodeWithText("Apellidos").assertIsDisplayed()
         composeTestRule.onNodeWithText("Correo electrónico").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Teléfono").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Teléfono (9 dígitos)").assertIsDisplayed()
 
     }
 
@@ -133,7 +134,8 @@ class RegistroScreenTest {
         composeTestRule.onNodeWithText("Registrarse").assertExists()
 
         // FOOTER
-        composeTestRule.onNodeWithText("_.-°-._ All in One _.-°-._")
+        composeTestRule
+            .onNodeWithText(".-°-. All in One .-°-.", ignoreCase = false)
             .assertIsDisplayed()
 
     }

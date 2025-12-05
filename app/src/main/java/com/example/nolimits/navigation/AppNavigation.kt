@@ -84,7 +84,15 @@ fun AppNavigation(
 
         // RECUPERAR CONTRASEÑA
         composable(Screen.Recover.route) {
-            RecuperarContrasenaScreen(navController = navController)
+
+            val authViewModel: AuthViewModel = viewModel(
+                factory = AuthViewModelFactory(appUserDao)
+            )
+
+            RecuperarContrasenaScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
 
         // CATÁLOGO

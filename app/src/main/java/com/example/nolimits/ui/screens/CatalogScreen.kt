@@ -95,7 +95,7 @@ fun CatalogScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Logout,
-                            contentDescription = "Cerrar Sesión",
+                            contentDescription = "null",
                             tint = Color.White,
                             modifier = Modifier.size(28.dp)
                         )
@@ -442,7 +442,7 @@ private fun productDescription(p: Product): String {
 
     if (n.contains("spider man remastered")) {
         return """
-            Título completo: Spider-Man Remastered.
+            Título completo: Marvel's Spider-Man Remastered.
             Autor: Insomniac Games y Marvel Games.
             Fecha: 2020.
             Imagen destacada: Spider-Man sobre Nueva York.
@@ -462,7 +462,7 @@ private fun productDescription(p: Product): String {
         """.trimIndent()
     }
 
-    if (n.contains("spider man 3") && !isVideogame(n)) {
+    if ((n.contains("spiderman 3") || n.contains("spider man 3")) && !isVideogame(n)) {
         return """
             Título completo: Spider-Man 3.
             Autor: Stan Lee y Sam Raimi.
@@ -473,7 +473,7 @@ private fun productDescription(p: Product): String {
         """.trimIndent()
     }
 
-    if (n.contains("spider man 2") && !isVideogame(n)) {
+    if ((n.contains("spiderman 2") || n.contains("spider man 2")) && !isVideogame(n)) {
         return """
             Título completo: Spider-Man 2.
             Autor: Stan Lee y Sam Raimi.
@@ -484,7 +484,8 @@ private fun productDescription(p: Product): String {
         """.trimIndent()
     }
 
-    if (n.contains("spider man") && !n.contains("2") && !n.contains("3")
+    if ((n.contains("spiderman") || n.contains("spider man"))
+        && !n.contains("2") && !n.contains("3")
         && !n.contains("remastered") && !n.contains("miles morales")
         && !isAccessory(n) && !isVideogame(n)
     ) {

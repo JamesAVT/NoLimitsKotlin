@@ -97,5 +97,24 @@ class AuthViewModel(
             onSuccess()
         }
     }
+    // ------------------------
+    // RECUPERAR CONTRASEÑA
+    // ------------------------
+        fun recuperarContrasena(
+            correo: String,
+            onSuccess: () -> Unit,
+            onError: (String) -> Unit
+        ) {
+            viewModelScope.launch {
+                // Llamamos al backend para ver si el correo existe
+                val existe = authRepo.emailExiste(correo)
 
+                if (existe) {
+                    // Aquí más adelante podrías llamar a un endpoint real de "forgot password"
+                    onSuccess()
+                } else {
+                    onError("El correo no está registrado.")
+                }
+            }
+        }
 }

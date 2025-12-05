@@ -331,11 +331,21 @@ fun PantallaMetodoPago(
 
                             withContext(Dispatchers.Main) {
                                 if (ok) {
-                                    // Venta registrada OK → continuar como antes
+                                    // 1) Guardar datos del cliente en ESTA pantalla (Método de Pago),
+                                    // para que Boleta los lea desde previousBackStackEntry
+                                    navController.currentBackStackEntry?.savedStateHandle?.apply {
+                                        set("nombre", nombreTitular)
+                                        set("apellidos", "")
+                                        set("direccion", "No registrado")
+                                        set("region", "No registrado")
+                                    }
+
+                                    // 2) Navegar a la boleta
                                     navController.navigate("boleta") {
                                         launchSingleTop = true
                                     }
 
+                                    // 3) Guardar datos propios de la boleta (items, total, últimos 4)
                                     navController.currentBackStackEntry?.savedStateHandle?.set("itemsComprados", items)
                                     navController.currentBackStackEntry?.savedStateHandle?.set("total", total)
                                     navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -346,7 +356,6 @@ fun PantallaMetodoPago(
                                     cartViewModel.clearCart()
 
                                 } else {
-                                    // Error si no se registró
                                     Toast.makeText(
                                         navController.context,
                                         "Error al registrar la venta en el servidor",

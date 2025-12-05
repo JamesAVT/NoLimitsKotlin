@@ -90,6 +90,7 @@ class CartScreenTest {
                     id = 1,
                     name = "Producto Test",
                     price = 5000.0,
+                    tipoProducto = "Videojuego",
                     imageRes = null
                 )
             )

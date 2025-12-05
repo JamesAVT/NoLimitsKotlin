@@ -32,8 +32,8 @@ class BoletaComprobanteTest {
         // -- Datos falsos --
         // Aquí creamos dos productos ficticios para simular una compra.
         val productos = listOf(
-            Product(id = 1, name = "Producto A", price = 5000.0, imageRes = null),
-            Product(id = 2, name = "Producto B", price = 10000.0, imageRes = null)
+            Product(id = 1, name = "Producto A", price = 5000.0, tipoProducto = "Videojuego", imageRes = null),
+            Product(id = 2, name = "Producto B", price = 10000.0, tipoProducto = "Videojuego", imageRes = null)
         )
 
         // Renderizamos la pantalla dentro del entorno de prueba.
@@ -94,8 +94,8 @@ class BoletaComprobanteTest {
         // -- Datos falsos --
         // Aquí creamos dos productos ficticios para simular una compra.
         val productos = listOf(
-            Product(id = 1, name = "Producto A", price = 5000.0, imageRes = null),
-            Product(id = 2, name = "Producto B", price = 10000.0, imageRes = null)
+            Product(id = 1, name = "Producto A", price = 5000.0, tipoProducto = "Videojuego", imageRes = null),
+            Product(id = 2, name = "Producto B", price = 10000.0, tipoProducto = "Videojuego", imageRes = null)
         )
 
         // Renderizamos la pantalla dentro del entorno de prueba.

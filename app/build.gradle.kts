@@ -1,3 +1,4 @@
+// Ruta: app/build.gradle.kts
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,19 +9,14 @@ plugins {
 android {
     namespace = "com.example.nolimits"
 
-    // Versión del SDK con la que compilas la app
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.nolimits"
 
-        // Mínima versión de Android soportada
         minSdk = 30
-
-        // Versión objetivo (optimización / comportamiento)
         targetSdk = 36
 
-        // Versión interna y visible de la app
         versionCode = 1
         versionName = "1.0"
 
@@ -30,7 +26,6 @@ android {
 
     buildTypes {
         release {
-            // Minify (ProGuard/R8) desactivado en debug
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -39,31 +34,20 @@ android {
         }
     }
 
-    // Compatibilidad con Java
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    // Target de JVM para Kotlin
     kotlinOptions {
         jvmTarget = "11"
     }
 
-    // Activar Jetpack Compose
     buildFeatures {
         compose = true
     }
 }
 
-/**
- * Configuración de Kapt (procesador de anotaciones de Kotlin).
- *
- * - correctErrorTypes = true:
- *   Hace que Kapt tolere anotaciones que aún no puede resolver bien
- *   durante la generación de stubs Java, evitando errores como
- *   "NonExistentClass cannot be converted to Annotation".
- */
 kapt {
     correctErrorTypes = true
 }
@@ -77,24 +61,23 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-rc02")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
-    // Corrutinas para operaciones asíncronas (llamadas a API, etc.)
+    // Corrutinas
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // -----------------------------
-    // DataStore (preferencias)
+    // DataStore
     // -----------------------------
     implementation("androidx.datastore:datastore-preferences:1.1.0")
 
     // -----------------------------
-    // Room (base de datos local)
+    // Room
     // -----------------------------
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
     // -----------------------------
-    // Compose "suelto" (sin BOM)
-    // (OJO: podrías limpiarlo luego y quedarte solo con el BOM)
+    // Compose (sin BOM)
     // -----------------------------
     implementation("androidx.compose.ui:ui:1.7.2")
     implementation("androidx.compose.material3:material3:1.3.0")
@@ -102,32 +85,30 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.2")
 
     // -----------------------------
-    // Retrofit + OkHttp (consumo de APIs)
+    // Retrofit + OkHttp
     // -----------------------------
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     // -----------------------------
-    // Coil (carga de imágenes en Compose)
+    // Coil
     // -----------------------------
     implementation("io.coil-kt:coil-compose:2.3.0")
 
     // -----------------------------
-    // Icons Material para Compose
+    // Material Icons
     // -----------------------------
     implementation("androidx.compose.material:material-icons-extended")
 
     // -----------------------------
-    // AndroidX base (usando tu Version Catalog)
+    // AndroidX base (Version Catalog)
     // -----------------------------
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // BOM de Compose (centraliza versiones de Compose declaradas con libs.androidx...)
     implementation(platform(libs.androidx.compose.bom))
-
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -135,38 +116,42 @@ dependencies {
     implementation(libs.androidx.foundation)
 
     // -----------------------------
-    // TESTS UNITARIOS (JUnit 5 + Kotest + Mockk)
+    // TESTS UNITARIOS (local unit tests)
     // -----------------------------
 
-    // ELIMINADO: testImplementation(libs.junit)  // JUnit4 se reemplaza por JUnit 5
+    // JUnit 4 clásico (para tests locales normales)
+    testImplementation("junit:junit:4.13.2")
 
-    // Kotest: runner y assertions (estilo más cómodo para tests)
+    // Kotest + JUnit 5 (si más adelante quieres usar JUnit 5)
     testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
-
-    // JUnit 5 (plataforma estándar)
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
-    // Mockk para mocks en Kotlin
+    // Mockk
     testImplementation("io.mockk:mockk:1.13.10")
 
     // -----------------------------
     // TESTS INSTRUMENTADOS (AndroidTest)
     // -----------------------------
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
 
-    // Herramientas de depuración de Compose
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    // JUnit para AndroidX
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+
+    // Espresso actualizado (evita el crash de InputManager en Android 14+)
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Compose UI tests (JUnit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // Herramientas de depuración / manifest de tests
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
 // ------------------------------------
-// Configuración global de tests (JUnit 5)
+// Configuración global SOLO para tests locales (JUnit5)
 // ------------------------------------
 tasks.withType<Test>().configureEach {
-    // Obliga a Gradle a usar la plataforma de JUnit 5
     useJUnitPlatform()
 }

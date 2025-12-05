@@ -1,3 +1,4 @@
+// Ruta: app/src/main/java/com/example/nolimits/ui/screens/RecuperarContrasenaScreen.kt
 package com.example.nolimits.ui.screens
 
 import android.widget.Toast
@@ -13,23 +14,48 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nolimits.data.local.model.database.AppDatabase
+import com.example.nolimits.ui.viewmodels.AuthViewModel
+import com.example.nolimits.ui.viewmodels.AuthViewModelFactory
 
 /*
     Pantalla para recuperar contraseña por correo.
 */
 
-// Es una anotación para decirle a Compose: “Quiero usar funciones que todavía son EXPERIMENTALES. Entiendo los riesgos.”
+/**
+ * Overload “simple” para usar en tests o en navegación básica.
+ * Crea el AuthViewModel internamente con su factory.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
-// @Composable es una anotación que convierte una función de Kotlin en una función que puede dibujar UI usando Jetpack Compose.
 @Composable
-fun RecuperarContrasenaScreen(navController: NavController) {
+fun RecuperarContrasenaScreen(
+    navController: NavController
+) {
+    val context = LocalContext.current
+    val appUserDao = AppDatabase.getInstance(context).appUserDao()
 
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(appUserDao)
+    )
+
+    RecuperarContrasenaScreen(
+        navController = navController,
+        authViewModel = authViewModel
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecuperarContrasenaScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     var correo by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // Es un contenedor que te da la estructura básica de una pantalla.
     Scaffold(
-        // NAV superior negro con flecha blanca
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -48,7 +74,6 @@ fun RecuperarContrasenaScreen(navController: NavController) {
                                 restoreState = true
                             }
                         },
-                        // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
                         modifier = Modifier.padding(start = 4.dp)
                     ) {
                         Icon(
@@ -64,15 +89,12 @@ fun RecuperarContrasenaScreen(navController: NavController) {
                 )
             )
         },
-
-        // FOOTER negro con texto centrado
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.Black,
                 contentColor = Color.White
             ) {
                 Box(
-                    // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
@@ -88,7 +110,6 @@ fun RecuperarContrasenaScreen(navController: NavController) {
         }
     ) { innerPadding ->
         Column(
-            // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -103,28 +124,24 @@ fun RecuperarContrasenaScreen(navController: NavController) {
                 fontWeight = FontWeight.Bold
             )
 
-            // Spacer es un composable que sirve para crear un espacio vacío, ya sea vertical o horizontal.
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Ingresa tu correo electrónico y te enviaremos las instrucciones para crear una nueva contraseña. Una vez hecho, se te dirigirá a la página principal.",
+                text = "Ingresa tu correo electrónico y validaremos si está registrado. " +
+                        "Si corresponde, se enviarán instrucciones para crear una nueva contraseña.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Spacer es un composable que sirve para crear un espacio vacío, ya sea vertical o horizontal.
-            // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
             Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedTextField(
                 value = correo,
                 onValueChange = { correo = it },
                 label = { Text("Ingresa tu correo") },
-                // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Spacer es un composable que sirve para crear un espacio vacío, ya sea vertical o horizontal.
             Spacer(Modifier.height(24.dp))
 
             Button(
@@ -147,26 +164,43 @@ fun RecuperarContrasenaScreen(navController: NavController) {
                         }
 
                         else -> {
-                            Toast.makeText(
-                                context,
-                                "Instrucciones enviadas a tu correo.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            navController.navigate("signin") {
-                                popUpTo("recuperar_contrasenia") { inclusive = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            isLoading = true
+
+                            authViewModel.recuperarContrasena(
+                                correo = correo,
+                                onSuccess = {
+                                    isLoading = false
+                                    Toast.makeText(
+                                        context,
+                                        "Instrucciones enviadas a tu correo.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    navController.navigate("signin") {
+                                        popUpTo("recuperar_contrasenia") { inclusive = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                onError = { mensaje ->
+                                    isLoading = false
+                                    Toast.makeText(
+                                        context,
+                                        mensaje,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
                         }
                     }
                 },
-                // Modifier es un objeto que le dice al Composable: cómo se debe ver, cómo debe comportarse y cómo debe posicionarse.
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = MaterialTheme.shapes.large
             ) {
-                Text("Continuar")
+                Text(if (isLoading) "Validando..." else "Continuar")
             }
         }
     }
