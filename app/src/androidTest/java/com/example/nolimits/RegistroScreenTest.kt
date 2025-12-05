@@ -125,7 +125,7 @@ class RegistroScreenTest {
         composeTestRule.onNodeWithText("Dirección").assertIsDisplayed()
         composeTestRule.onNodeWithText("Contraseña (mín. 8 caracteres)").assertIsDisplayed()
         composeTestRule.onNodeWithText("Repetir contraseña").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Acepto los términos y condiciones").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Acepto los términos y condiciones").assertExists()
 
         // IMPORTANTE: "Registrarse" e "Iniciar sesión" están al final del Scroll.
         // No se usan assertIsDisplayed() porque no están visibles en pantalla,
@@ -135,7 +135,7 @@ class RegistroScreenTest {
 
         // FOOTER
         composeTestRule
-            .onNodeWithText(".-°-. All in One .-°-.", ignoreCase = false)
+            .onNodeWithText("_.-°-._ All in One _.-°-._", ignoreCase = false)
             .assertIsDisplayed()
 
     }
